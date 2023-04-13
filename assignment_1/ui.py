@@ -64,8 +64,8 @@ class UI(QWidget):
         try:
             k = int(self.edit_k.text())
             data = self.edit_data.toPlainText()
-            dd = MBJS(k, data)
-            print(dd)
+            dispatch_table = MBJS(k, data)
+            print(dispatch_table)
 
             # 清空表格
             self.table.clearContents()
