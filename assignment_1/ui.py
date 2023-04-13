@@ -56,7 +56,7 @@ class UI(QWidget):
 
         # 设置窗口大小和位置
         self.setGeometry(300, 300, 850, 1000)
-        self.setWindowTitle('输入k的值')
+        self.setWindowTitle('多道批处理作业调度')
 
         self.show()
 
