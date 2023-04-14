@@ -64,29 +64,26 @@ class UI(QWidget):
         try:
             k = int(self.edit_k.text())
             data = self.edit_data.toPlainText()
-            dispatch_table = MBJS(k, data)
-            print(dispatch_table)
+            dispatch_table, avg, avg_w = MBJS(k, data)
 
             # 清空表格
             self.table.clearContents()
             self.table.setRowCount(k)
 
             # 添加数据
-            for i in range(k):  # todo 更改表格内数据
-                item1 = QTableWidgetItem(str(i + 1))
-                item2 = QTableWidgetItem("job_" + str(i))
-                item3 = QTableWidgetItem(str(i * 10))
-                item4 = QTableWidgetItem(str(i * 20))
-                item5 = QTableWidgetItem(str(i * 30))
-                self.table.setItem(i, 0, item1)
-                self.table.setItem(i, 1, item2)
-                self.table.setItem(i, 2, item3)
-                self.table.setItem(i, 3, item4)
-                self.table.setItem(i, 4, item5)
+            for i in range(k):
+                item0 = QTableWidgetItem(str(dispatch_table[i][0]))
+                item1 = QTableWidgetItem(str(dispatch_table[i][1]))
+                item2 = QTableWidgetItem(str(dispatch_table[i][2]))
+                item3 = QTableWidgetItem(str(dispatch_table[i][3]))
+                item4 = QTableWidgetItem(str(dispatch_table[i][4]))
+                self.table.setItem(i, 0, item0)
+                self.table.setItem(i, 1, item1)
+                self.table.setItem(i, 2, item2)
+                self.table.setItem(i, 3, item3)
+                self.table.setItem(i, 4, item4)
 
             # 添加平均时间
-            avg = 1
-            avg_w = 2  # todo 更改两个时间
             self.lbl_avg.setText("平均周转时间：" + str(avg))
             self.lbl_avg_w.setText("平均加权周转时间：" + str(avg_w))
         except:
