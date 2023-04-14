@@ -29,7 +29,7 @@ class UI(QWidget):
         # 创建表格
         self.table = QTableWidget()
         self.table.setColumnCount(5)  # 设置表格列数
-        self.table.setHorizontalHeaderLabels(['调度次序', '作业号', '调度时间', '周转时间', '带权周转时间'])  # 设置表头
+        self.table.setHorizontalHeaderLabels(['调度次序', '作业号', '调度时间', '周转时间(min)', '带权周转时间'])  # 设置表头
         self.table.verticalHeader().hide()
 
         # 创建标签
@@ -84,7 +84,7 @@ class UI(QWidget):
                 self.table.setItem(i, 4, item4)
 
             # 添加平均时间
-            self.lbl_avg.setText("平均周转时间：" + str(avg))
+            self.lbl_avg.setText("平均周转时间：" + str(avg) + " min")
             self.lbl_avg_w.setText("平均加权周转时间：" + str(avg_w))
         except:
             QMessageBox.about(self, "提示", "输入格式错误，请检查输入的格式")
