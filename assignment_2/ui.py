@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QTextEdit, QHBoxLayout, QVBoxLayout, QPushButton, QApplication
 
-from assignment_22.bankers import bankers
+from assignment_2.bankers import bankers
 
 
 class UI(QWidget):
