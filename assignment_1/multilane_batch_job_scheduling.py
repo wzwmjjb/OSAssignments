@@ -64,8 +64,6 @@ def MBJS(k, data):
             if current_time >= cmt_t:
                 flag = True
                 r_dict[i[0]] = response_ratio(current_time, cmt_t, r_t)
-        print(r_dict)
-        print(dd)
         if flag:
             max_r, job_num = find_r_max(r_dict, dd)
             order_num += 1
