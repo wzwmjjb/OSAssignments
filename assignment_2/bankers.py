@@ -39,8 +39,11 @@ def bankers(n_process: int, n_resource: int, allocation_array: str, max_need_arr
 
     if process_num != "-1":
         pn = int(process_num)
-        prcs_rqst = process_request.split()
-        prcs_rqst = [int(i) for i in prcs_rqst]
+        if n_resource != 1:
+            prcs_rqst = process_request.split()
+            prcs_rqst = [int(i) for i in prcs_rqst]
+        else:
+            prcs_rqst = int(process_request)
         for nr in range(n_resource):
             allocation_array[pn-1][nr] += prcs_rqst[nr]
             ar_array[nr] -= prcs_rqst[nr]
