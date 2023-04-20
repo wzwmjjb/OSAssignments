@@ -23,10 +23,16 @@ def response_ratio(current_time, cmt_t, r_t):
     return r
 
 
-def find_r_max(r_d):
+def find_r_max(r_d, dd):
     r_l = list(r_d.values())
     max_value = max(r_l)
-    key_of_max_value = [k for k, v in r_d.items() if v == max_value][0]
+    keys_of_max_value = [k for k, v in r_d.items() if v == max_value]
+    ddd = {}
+    for key in dd:
+        if key in keys_of_max_value:
+            ddd[key] = dd[key][1]
+    min_time = min(ddd.values())
+    key_of_max_value = [k for k, v in ddd.items() if v == min_time][0]
     return max_value, key_of_max_value
 
 
@@ -58,8 +64,10 @@ def MBJS(k, data):
             if current_time >= cmt_t:
                 flag = True
                 r_dict[i[0]] = response_ratio(current_time, cmt_t, r_t)
+        print(r_dict)
+        print(dd)
         if flag:
-            max_r, job_num = find_r_max(r_dict)
+            max_r, job_num = find_r_max(r_dict, dd)
             order_num += 1
             start_time = current_time
             start_time = start_time.strftime('%H:%M')
@@ -84,3 +92,9 @@ def MBJS(k, data):
     w_list = [i[4] for i in dispatch_table]
     avg_w = sum(w_list) / k
     return dispatch_table, round(avg, 2), round(avg_w, 2)
+
+
+if __name__ == "__main__":
+    k = 5
+    data = "0830 20\n0900 30\n0900 20\n0910 10\n0920 20"
+    MBJS(k, data)
