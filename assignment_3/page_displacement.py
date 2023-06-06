@@ -35,7 +35,8 @@ def FIFO(page_list, page_num):
             page_table.append(page_queue[:])
         else:
             page_table.append(page_queue[:])
-    return count*1.0/len(page_list), page_table
+    page_table = modify_page_table(page_num, page_table)
+    return count * 1.0 / len(page_list), page_table
 
 
 def LRU(page_list, page_num):
@@ -63,14 +64,40 @@ def LRU(page_list, page_num):
             page_queue.remove(page)
             page_queue.append(page)
             page_table.append(page_queue[:])
-    return count*1.0/len(page_list), page_table
+    page_table = modify_page_table(page_num, page_table)
+    return count * 1.0 / len(page_list), page_table
 
 
-# def test():
-#     page_list = random_list(20, 5)
-#     # print(page_list)
-#     print(FIFO([7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1], 3))
-#     print(LRU([7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1], 3))
-#
-#
-# test()
+def modify_page_table(page_num, page_table):
+    for i in range(len(page_table)):
+        if len(page_table[i]) == page_num:
+            pn = i
+            break
+    for i in range(pn + 1, len(page_table)):
+        flag = False
+        for j in range(len(page_table[i])):
+            if page_table[i][j] not in page_table[i - 1]:
+                temp_elem = page_table[i][j]
+                flag = True
+            if page_table[i - 1][j] not in page_table[i]:
+                temp_j = j
+        if flag:
+            for j in range(len(page_table[i])):
+                if j != temp_j:
+                    page_table[i][j] = page_table[i - 1][j]
+                else:
+                    page_table[i][j] = temp_elem
+        else:
+            for j in range(len(page_table[i])):
+                page_table[i][j] = page_table[i - 1][j]
+    return page_table
+
+
+def test():
+    page_list = random_list(20, 5)
+    print(page_list)
+    print(FIFO([7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1], 3))
+    print(LRU([7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1], 3))
+
+
+test()
