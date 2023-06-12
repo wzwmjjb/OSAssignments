@@ -1,3 +1,19 @@
+import random
+
+
+def random_x():
+    """
+    随机生成x，其中x的长度是随机生成的，且x中的字符也是1-9之间的随机数字，x以0结尾
+    :return:
+    """
+    length = random.randint(1, 30)
+    x = ""
+    for i in range(length):
+        x += str(random.randint(1, 9))
+    x += "0"
+    return x
+
+
 class PCB:
     """
     进程控制块
@@ -16,4 +32,21 @@ class PCB:
         self.x = x
 
     def __str__(self):
-        return "PCB(pcb_id=%d, status=%d, count=%d, x=%d)" % (self.pcb_id, self.status, self.count, self.x)
+        return "PCB(pcb_id=%d, status=%d, count=%d, x=%s)" % (self.pcb_id, self.status, self.count, self.x)
+
+    def documents(self):
+        doc = []
+        doc_len = []
+        for i in range(self.count):
+            doc.append(random_x())
+            doc_len.append(len(doc[i]))
+        return doc, doc_len
+
+    def dispatch_user_process(self, remain_buffer):
+        """
+        调度用户进程
+        :return:
+        """
+        if remain_buffer == 0:
+            self.status = 1
+            return

@@ -1,3 +1,5 @@
+import random
+
 from term_project.PCB import PCB
 
 
@@ -18,3 +20,19 @@ class SpoolingServer:
         self.c3 = 10
         self.ptr0 = 0
         self.ptr1 = 0
+        # 初始化SPOOLing执行进程
+        self.spooling_process = PCB(2, 0, 0, "")
+
+    def random_dispatch(self):
+        """
+        :return:
+        """
+        x = random.randint(1, 100)
+        if x <= 45 and self.user0.status == 0:
+            pass    # 执行用户进程0
+        elif x <= 90 and self.user1.status == 0:
+            pass    # 执行用户进程1
+        elif self.spooling_process.status == 0:
+            pass    # 执行SPOOLing进程
+        else:
+            pass

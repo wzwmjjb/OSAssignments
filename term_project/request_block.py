@@ -14,4 +14,4 @@ class ReqBlock:
         self.address = address
 
     def __str__(self):
-        return "ReqBlock(req_name=%s, length=%d, address=%d)" % (self.req_name, self.length, self.address)
+        return "ReqBlock(req_name=%d, length=%d, address=%d)" % (self.req_name, self.length, self.address)
