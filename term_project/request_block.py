@@ -3,7 +3,7 @@ class ReqBlock:
     请求输出块
     """
 
-    def __init__(self, req_name, length, address):
+    def __init__(self, req_name: int, length: int, address: int):
         """
         :param req_name:请求进程名
         :param length:本次输出信息长度

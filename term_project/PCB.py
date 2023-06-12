@@ -2,7 +2,8 @@ class PCB:
     """
     进程控制块
     """
-    def __init__(self, pcb_id, status, count, x):
+
+    def __init__(self, pcb_id: int, status: int, count: int, x: str):
         """
         :param pcb_id:进程标识数
         :param status:进程状态
