@@ -30,23 +30,41 @@ class PCB:
         self.status = status
         self.count = count
         self.x = x
+        self.doc = None
+        self.doc_len = None
 
     def __str__(self):
         return "PCB(pcb_id=%d, status=%d, count=%d, x=%s)" % (self.pcb_id, self.status, self.count, self.x)
 
     def documents(self):
-        doc = []
-        doc_len = []
+        self.doc = []
+        self.doc_len = []
         for i in range(self.count):
-            doc.append(random_x())
-            doc_len.append(len(doc[i]))
-        return doc, doc_len
+            self.doc.append(random_x())
+            self.doc_len.append(len(self.doc[i]))
+        self.x = self.doc[0]
 
-    def dispatch_user_process(self, remain_buffer):
+    def dispatch_user_process(self, remain_buffer, req_block_num, spooling_buffer, first_empty):
         """
         调度用户进程
+        :param remain_buffer:输出井剩余容量 c1[i]
+        :param req_block_num:空闲输出请求块数 c3
+        :param spooling_buffer:输出井 spooling_pool[i]
+        :param first_empty:第一个可用空缓冲指针 c2[i][0]
         :return:
         """
-        if remain_buffer == 0:
-            self.status = 1
+        while True:
+            if remain_buffer == 0:  # 输出井满
+                self.status = 1
+                return
+            else:
+                self.status = 0
+                spooling_buffer[first_empty] = self.x
+                first_empty = (first_empty + 1) / 100
+                remain_buffer -= 1
+                self.x = self.x[1:]
+                if self.x != "0":
+                    break
+        if req_block_num == 0:  # 没有空闲输出请求块
+            self.status = 3
             return
