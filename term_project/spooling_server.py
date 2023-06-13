@@ -39,8 +39,10 @@ class SpoolingServer:
         # 调度信息
         self.dispatch_info = []
 
-    def random_dispatch(self):
+    def random_dispatch(self, first_time_append: list):
         """
+        随机调度
+        :param first_time_append:[用户进程0结束, 用户进程1结束]
         :return:
         """
         x = random.randint(1, 100)
@@ -55,12 +57,14 @@ class SpoolingServer:
                 if self.spooling_process.status != 0:
                     self.spooling_process.status = 0
                 self.dispatch_info.append("执行用户进程0，输出字符到输出井，处于执行状态0\n")
-            elif self.user0.status == 1:  # 输出井0满
+            if self.user0.status == 1:  # 输出井0满
                 self.dispatch_info.append("用户进程0输出井0满，处于等待状态1\n")
-            elif self.user0.status == 3:  # 没有空闲输出请求块
+            if self.user0.status == 3:  # 没有空闲输出请求块
                 self.dispatch_info.append("用户进程0没有空闲输出请求块，处于等待状态3\n")
-            else:
-                pass
+            if self.user0.status == 4:  # 执行结束
+                if first_time_append[0]:
+                    self.dispatch_info.append("用户进程0执行结束，处于终止状态4\n")
+                    first_time_append[0] = False
         elif x <= 90:
             if self.user1.status == 0:
                 self.c1[1], self.c3, self.c2[1][0], self.ptr1 = self.user1.dispatch_user_process(self.c1[1], self.c3,
@@ -72,19 +76,27 @@ class SpoolingServer:
                 if self.spooling_process.status != 0:
                     self.spooling_process.status = 0
                 self.dispatch_info.append("执行用户进程1，输出字符到输出井，处于执行状态0\n")
-            elif self.user1.status == 1:
+            if self.user1.status == 1:
                 self.dispatch_info.append("用户进程1输出井1满，处于等待状态1\n")
-            elif self.user1.status == 3:
+            if self.user1.status == 3:
                 self.dispatch_info.append("用户进程1没有空闲输出请求块，处于等待状态3\n")
-            else:
-                pass
+            if self.user1.status == 4:
+                if first_time_append[1]:
+                    self.dispatch_info.append("用户进程1执行结束，处于终止状态4\n")
+                    first_time_append[1] = False
         elif x <= 100:
             if self.spooling_process.status == 0:
-                # TODO 等会写
-                self.dispatch_info.append("SPOOLing执行进程处于执行状态0\n")
-            elif self.spooling_process.status == 2:
-                self.dispatch_info.append("输出井空，SPOOLing执行进程处于等待状态2\n")
-            elif self.spooling_process.status == 4:
+                if self.c3 == 10:
+                    if self.user0.status == 4 and self.user1.status == 4:
+                        self.spooling_process.status = 4
+                    else:
+                        self.spooling_process.status = 2
+                else:
+                    # self.spooling_process.status.spooling_output
+                    self.dispatch_info.append("SPOOLing执行进程处于执行状态0\n")
+            if self.spooling_process.status == 2:
+                self.dispatch_info.append("请求输出块为空，SPOOLing执行进程处于等待状态2\n")
+            if self.spooling_process.status == 4:
                 self.dispatch_info.append("SPOOLing执行进程已经完成，处于终止状态4\n")
         else:
             pass
@@ -92,6 +104,7 @@ class SpoolingServer:
 
 if __name__ == '__main__':
     spooling = SpoolingServer(3, 5)
+    first_time = [True, True]
     while spooling.spooling_process.status != 4:
-        spooling.random_dispatch()
+        spooling.random_dispatch(first_time)
     print("hh")

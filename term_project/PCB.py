@@ -52,21 +52,21 @@ class PCB:
         self.x = self.doc[0]
 
     def dispatch_user_process(self, remain_buffer: int, req_block_num: int, spooling_buffer: list, first_empty: int,
-                              ptr1: int, req_block: ReqBlock):
+                              ptr1_: int, req_block: ReqBlock):
         """
-        调度用户进程，最多完成一个文件的输出，也有可能完成之前没完成的半个文件，或者一个新文件只完成了一半输出井就满了
+        调度用户进程
         :param remain_buffer:输出井剩余容量 c1[i]
         :param req_block_num:空闲输出请求块数 c3
         :param spooling_buffer:输出井 spooling_pool[i]
         :param first_empty:第一个可用空缓冲指针 c2[i][0]
-        :param ptr1:空闲请求输出块指针 ptr1
-        :param req_block:输出请求块req_blocks[ptr1]
-        :return:c1[i], c3, c2[i][0], ptr1
+        :param ptr1_:空闲请求输出块指针 ptr1
+        :param req_block:输出请求块req_blocks[ptr1_]
+        :return:c1[i], c3, c2[i][0], ptr1_
         """
         while True:
             if remain_buffer == 0:  # 输出井满
                 self.status = 1
-                return remain_buffer, req_block_num, first_empty, ptr1
+                return remain_buffer, req_block_num, first_empty, ptr1_
             else:  # 把文件里的字符输出到输出井
                 self.status = 0
                 spooling_buffer[first_empty] = self.x[0]
@@ -81,19 +81,32 @@ class PCB:
         self.current_doc += 1
         if self.current_doc == self.count:  # 所有文件都输出完毕
             self.status = 4
-            return remain_buffer, req_block_num, first_empty, ptr1
+            return remain_buffer, req_block_num, first_empty, ptr1_
         self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
 
         if req_block_num == 0:  # 没有空闲输出请求块
             self.status = 3
-            return remain_buffer, req_block_num, first_empty, ptr1
+            return remain_buffer, req_block_num, first_empty, ptr1_
 
         req_block.req_name = self.pcb_id
         # TODO 文件长度大于输出井长度？？？？？先默认不会好了
-        req_block.req_length = self.doc_len[self.current_doc - 1]
-        req_block.req_address = first_empty
-        req_block.req_address = self.doc_first_address[self.current_doc - 1]
+        req_block.length = self.doc_len[self.current_doc - 1]
+        req_block.address = self.doc_first_address[self.current_doc - 1]
         req_block_num -= 1
-        ptr1 += 1
-        return remain_buffer, req_block_num, first_empty, ptr1
+        ptr1_ = (ptr1_ + 1) % 10
+        return remain_buffer, req_block_num, first_empty, ptr1_
 
+    def spooling_output_process(self, req_blocks: list, ptr0_: int, ptr1_: int, c1_: list, c2_: list, user_states: list,
+                                c3_: int):
+        """
+        输出井进程
+        :param req_blocks:
+        :param ptr0_:
+        :param ptr1_:
+        :param c1_:
+        :param c2_:
+        :param user_states:
+        :param c3_:
+        :return:
+        """
+        pass
