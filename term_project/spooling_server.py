@@ -52,8 +52,7 @@ class SpoolingServer:
                                                                                                  self.spooling_pool[0],
                                                                                                  self.c2[0][0],
                                                                                                  self.ptr1,
-                                                                                                 self.req_blocks[
-                                                                                                     self.ptr1])
+                                                                                                 self.req_blocks)
                 if self.spooling_process.status != 0:
                     self.spooling_process.status = 0
                 self.dispatch_info.append("执行用户进程0，输出字符到输出井，处于执行状态0\n")
@@ -71,8 +70,7 @@ class SpoolingServer:
                                                                                                  self.spooling_pool[1],
                                                                                                  self.c2[1][0],
                                                                                                  self.ptr1,
-                                                                                                 self.req_blocks[
-                                                                                                     self.ptr1])
+                                                                                                 self.req_blocks)
                 if self.spooling_process.status != 0:
                     self.spooling_process.status = 0
                 self.dispatch_info.append("执行用户进程1，输出字符到输出井，处于执行状态0\n")
