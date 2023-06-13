@@ -76,8 +76,8 @@ class UI(QWidget):
         self.c2.setColumnCount(2)
         self.c2.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.c2.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.c2.setHorizontalHeaderLabels(["输出井0", "输出井1"])
-        self.c2.setVerticalHeaderLabels(["可用空缓冲指针", "满缓冲指针"])
+        self.c2.setHorizontalHeaderLabels(["可用空缓冲指针", "满缓冲指针"])
+        self.c2.setVerticalHeaderLabels(["输出井0", "输出井1"])
         self.c2.resizeColumnsToContents()
         self.c2.resizeRowsToContents()
 

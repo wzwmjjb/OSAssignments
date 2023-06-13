@@ -1,7 +1,5 @@
 import random
 
-from request_block import ReqBlock
-
 
 def random_x():
     """
@@ -79,34 +77,64 @@ class PCB:
                         break
 
             self.current_doc += 1
-            if self.current_doc == self.count:  # 所有文件都输出完毕
-                self.status = 4
-                return remain_buffer, req_block_num, first_empty, ptr1_
-            self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
 
             if req_block_num == 0:  # 没有空闲输出请求块
                 self.status = 3
                 return remain_buffer, req_block_num, first_empty, ptr1_
 
             req_blocks[ptr1_].req_name = self.pcb_id
-            # TODO 文件长度大于输出井长度？？？？？先默认不会好了
             req_blocks[ptr1_].length = self.doc_len[self.current_doc - 1]
             req_blocks[ptr1_].address = self.doc_first_address[self.current_doc - 1]
             req_block_num -= 1
             ptr1_ = (ptr1_ + 1) % 10
-        # return remain_buffer, req_block_num, first_empty, ptr1_
+            if self.current_doc == self.count:  # 所有文件都输出完毕
+                self.status = 4
+                return remain_buffer, req_block_num, first_empty, ptr1_
+            else:
+                self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
 
-    def spooling_output_process(self, req_blocks: list, ptr0_: int, ptr1_: int, c1_: list, c2_: list, user_states: list,
-                                c3_: int):
+
+    def dispatch_spooling_output_process(self, req_blocks: list, ptr0_: int, c1_: list, c2_: list, user_states: list,
+                                         c3_: int, spooling_buffer_: list):
         """
         输出井进程
-        :param req_blocks:
-        :param ptr0_:
-        :param ptr1_:
-        :param c1_:
-        :param c2_:
-        :param user_states:
-        :param c3_:
-        :return:
+        :param req_blocks:输出请求块req_blocks
+        :param ptr0_:要输出的第一个请求输出块指针
+        :param c1_:输出井剩余容量 [c1[0], c1[1]]
+        :param c2_:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
+        :param user_states:[用户进程0状态, 用户进程1状态]
+        :param c3_:输出请求块数
+        :param spooling_buffer_:输出井[spoolling_pool0, spoolling_pool1]
+        :return:ptr0_, c3_, output_info
         """
-        pass
+        output_info = []
+        while True:
+            if c3_ == 10:
+                if user_states[0] == 4 and user_states[1] == 4:
+                    self.status = 4
+                else:
+                    self.status = 2
+                return ptr0_, c3_, output_info
+
+            user_process_id = req_blocks[ptr0_].req_name
+            text_length = req_blocks[ptr0_].length
+            text_address = req_blocks[ptr0_].address
+            text_end = (text_address + text_length) % 100
+            if text_address < text_end:
+                text = spooling_buffer_[user_process_id][text_address:text_end]
+            else:
+                text = spooling_buffer_[user_process_id][text_address:] + spooling_buffer_[user_process_id][:text_end]
+            texts = ""
+            for i in range(len(text)):
+                texts += text[i]
+            output_info.append("用户进程%d输出文件：%s" % (user_process_id, texts))
+            ptr0_ = (ptr0_ + 1) % 10
+            c3_ += 1
+            c1_[user_process_id] += text_length
+            c2_[user_process_id][1] = (c2_[user_process_id][1] + text_length) % 100
+            if user_states[user_process_id] == 1:
+                user_states[user_process_id] = 0
+                return ptr0_, c3_, output_info
+            if user_states[user_process_id] == 3:
+                user_states[user_process_id] = 0
+                return ptr0_, c3_, output_info
