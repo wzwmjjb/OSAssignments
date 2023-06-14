@@ -105,7 +105,7 @@ class PCB:
         :param user_states:[用户进程0状态, 用户进程1状态]
         :param c3_:输出请求块数
         :param spooling_buffer_:输出井[spoolling_pool0, spoolling_pool1]
-        :return:ptr0_, c3_, output_info
+        :return:ptr0_, c3_, output_info, user_states
         """
         output_info = []
         while True:
@@ -114,7 +114,7 @@ class PCB:
                     self.status = 4
                 else:
                     self.status = 2
-                return ptr0_, c3_, output_info
+                return ptr0_, c3_, output_info, user_states
 
             user_process_id = req_blocks[ptr0_].req_name
             text_length = req_blocks[ptr0_].length
@@ -134,7 +134,7 @@ class PCB:
             c2_[user_process_id][1] = (c2_[user_process_id][1] + text_length) % 100
             if user_states[user_process_id] == 1:
                 user_states[user_process_id] = 0
-                return ptr0_, c3_, output_info
+                return ptr0_, c3_, output_info, user_states
             if user_states[user_process_id] == 3:
                 user_states[user_process_id] = 0
-                return ptr0_, c3_, output_info
+                return ptr0_, c3_, output_info, user_states

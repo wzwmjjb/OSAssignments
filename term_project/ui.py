@@ -161,12 +161,20 @@ class UI(QWidget):
         except:
             QMessageBox.warning(self, "警告", "请输入正确的文件数量")
             return
-        SpoolingServer(file_num0, file_num1)
-        # 按秒刷新界面
-        # for i in range(1, 11):
-        #     self.spooling_pool0_input.setText(str(i))
-        #     app.processEvents()
-        #     time.sleep(1)
+
+        spooling_ = SpoolingServer(file_num0, file_num1)
+        first_time = [True, True]
+        while spooling_.spooling_process.status != 4:
+            spooling_.random_dispatch(first_time)
+
+            # 把spooling_.spooling_pool[0]输出到
+            self.c3_value.setText(str(spooling_.c3))
+            self.ptr0_value.setText(str(spooling_.ptr0))
+            self.ptr1_value.setText(str(spooling_.ptr1))
+
+            app.processEvents()
+            time.sleep(1)
+
 
 
 if __name__ == '__main__':

@@ -63,6 +63,8 @@ class SpoolingServer:
             x = 46
         elif self.user0.status != 0 and self.user1.status != 0 and self.spooling_process.status == 0:
             x = 91
+        else:
+            x = random.randint(1, 100)
 
         if x <= 45:
             if self.user0.status == 0:  # 执行用户进程0
@@ -102,7 +104,8 @@ class SpoolingServer:
                     first_time_append[1] = False
         elif x <= 100:
             if self.spooling_process.status == 0:
-                self.ptr0, self.c3, opif = self.spooling_process.dispatch_spooling_output_process(
+                self.ptr0, self.c3, opif, [self.user0.status,
+                                           self.user1.status] = self.spooling_process.dispatch_spooling_output_process(
                     self.req_blocks,
                     self.ptr0,
                     self.c1,
@@ -110,7 +113,8 @@ class SpoolingServer:
                     [self.user0.status, self.user1.status],
                     self.c3,
                     self.spooling_pool)
-                self.output_info.append(opif)
+                for i in range(len(opif)):
+                    self.output_info.append(opif[i])
                 self.dispatch_info.append("SPOOLing执行进程处于执行状态0\n")
             if self.spooling_process.status == 2:
                 self.dispatch_info.append("请求输出块为空，SPOOLing执行进程处于等待状态2\n")
@@ -120,9 +124,9 @@ class SpoolingServer:
                 pass
 
 
-if __name__ == '__main__':
-    spooling = SpoolingServer(10, 10)
-    first_time = [True, True]
-    while spooling.spooling_process.status != 4:
-        spooling.random_dispatch(first_time)
-    print("hh")
+# if __name__ == '__main__':
+#     spooling = SpoolingServer(10, 10)
+#     first_time = [True, True]
+#     while spooling.spooling_process.status != 4:
+#         spooling.random_dispatch(first_time)
+#     print("hh")

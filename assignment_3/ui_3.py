@@ -1,10 +1,3 @@
-"""
-用PYQT5实现一个简单的GUI程序，要求如下：
-1. 输入页面走向长度L，内存块数目page_num，页表长度k
-2. 用随机数生成页面走向
-3. 分别用FIFO和LRU算法计算缺页率和页面置换表
-4. 将缺页率用标签显示在窗口上，页面置换表用表格显示在窗口上
-"""
 import sys
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QTableWidget, QHBoxLayout, QVBoxLayout, \
