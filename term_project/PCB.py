@@ -7,7 +7,7 @@ def random_x():
     随机生成x，其中x的长度是随机生成的，且x中的字符也是1-9之间的随机数字，x以0结尾
     :return:
     """
-    length = random.randint(1, 5)
+    length = random.randint(1, 50)
     x = ""
     for i in range(length):
         x += str(random.randint(1, 9))
@@ -43,18 +43,18 @@ class PCB:
     def __str__(self):
         return "PCB(pcb_id=%d, status=%d, count=%d, x=%s)" % (self.pcb_id, self.status, self.count, self.x)
 
-    # def documents(self):
-    #     self.doc = []
-    #     self.doc_len = []
-    #     for i in range(self.count):
-    #         self.doc.append(random_x())
-    #         self.doc_len.append(len(self.doc[i]))
-    #     self.x = self.doc[0]
-
     def documents(self):
-        self.doc = ['214710', '49880', '835830', '5310', '3340', '60', '440', '980', '6130', '758470']
-        self.doc_len = [6, 5, 6, 4, 4, 2, 3, 3, 4, 6]
+        self.doc = []
+        self.doc_len = []
+        for i in range(self.count):
+            self.doc.append(random_x())
+            self.doc_len.append(len(self.doc[i]))
         self.x = self.doc[0]
+
+    # def documents(self):
+    #     self.doc = ['214710', '49880', '835830', '5310', '3340', '60', '440', '980', '6130', '758470']
+    #     self.doc_len = [6, 5, 6, 4, 4, 2, 3, 3, 4, 6]
+    #     self.x = self.doc[0]
 
     def dispatch_user_process(self, remain_buffer: int, req_block_num: int, spooling_buffer: list, first_empty: int,
                               ptr1_: int, req_blocks: list):
@@ -130,7 +130,7 @@ class PCB:
                     self.status = 4
                 else:
                     self.status = 2
-                return ptr0_, c3_, output_info, user_states
+                return ptr0_, c3_, output_info, user_states, ptr1_
 
             user_process_id = req_blocks[ptr0_].req_name
             text_length = req_blocks[ptr0_].length
@@ -150,7 +150,7 @@ class PCB:
             c2_[user_process_id][1] = (c2_[user_process_id][1] + text_length) % 100
             if user_states[user_process_id] == 1:
                 user_states[user_process_id] = 0
-                return ptr0_, c3_, output_info, user_states
+                return ptr0_, c3_, output_info, user_states, ptr1_
             if user_states[0] == 3 or user_states[1] == 3:
                 if (user_states[0] == 3 and user_states[1] != 3) or (user_states[0] == 3 and user_states[1] == 3):
                     user_states[0] = 0

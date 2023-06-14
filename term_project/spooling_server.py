@@ -104,8 +104,7 @@ class SpoolingServer:
                     first_time_append[1] = False
         elif x <= 100:
             if self.spooling_process.status == 0:
-                self.ptr0, self.c3, opif, [self.user0.status,
-                                           self.user1.status], self.ptr1 = self.spooling_process.dispatch_spooling_output_process(
+                self.ptr0, self.c3, opif, us, self.ptr1 = self.spooling_process.dispatch_spooling_output_process(
                     self.req_blocks,
                     self.ptr0,
                     self.c1,
@@ -115,6 +114,8 @@ class SpoolingServer:
                     self.spooling_pool,
                     [self.user0.spare_req_block, self.user1.spare_req_block],
                     self.ptr1)
+                self.user0.status = us[0]
+                self.user1.status = us[1]
                 for i in range(len(opif)):
                     self.output_info.append(opif[i])
                 self.dispatch_info.append("SPOOLing执行进程处于执行状态0\n")
