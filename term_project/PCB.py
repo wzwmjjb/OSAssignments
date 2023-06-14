@@ -1,4 +1,5 @@
 import random
+from request_block import ReqBlock
 
 
 def random_x():
@@ -6,7 +7,7 @@ def random_x():
     随机生成x，其中x的长度是随机生成的，且x中的字符也是1-9之间的随机数字，x以0结尾
     :return:
     """
-    length = random.randint(1, 50)
+    length = random.randint(1, 5)
     x = ""
     for i in range(length):
         x += str(random.randint(1, 9))
@@ -37,16 +38,22 @@ class PCB:
         self.doc_len = None
         self.current_doc = 0
         self.doc_first_address = []
+        self.spare_req_block = ReqBlock(self.pcb_id, 0, 0)
 
     def __str__(self):
         return "PCB(pcb_id=%d, status=%d, count=%d, x=%s)" % (self.pcb_id, self.status, self.count, self.x)
 
+    # def documents(self):
+    #     self.doc = []
+    #     self.doc_len = []
+    #     for i in range(self.count):
+    #         self.doc.append(random_x())
+    #         self.doc_len.append(len(self.doc[i]))
+    #     self.x = self.doc[0]
+
     def documents(self):
-        self.doc = []
-        self.doc_len = []
-        for i in range(self.count):
-            self.doc.append(random_x())
-            self.doc_len.append(len(self.doc[i]))
+        self.doc = ['214710', '49880', '835830', '5310', '3340', '60', '440', '980', '6130', '758470']
+        self.doc_len = [6, 5, 6, 4, 4, 2, 3, 3, 4, 6]
         self.x = self.doc[0]
 
     def dispatch_user_process(self, remain_buffer: int, req_block_num: int, spooling_buffer: list, first_empty: int,
@@ -80,6 +87,14 @@ class PCB:
 
             if req_block_num == 0:  # 没有空闲输出请求块
                 self.status = 3
+                self.spare_req_block.req_name = self.pcb_id
+                self.spare_req_block.length = self.doc_len[self.current_doc - 1]
+                self.spare_req_block.address = self.doc_first_address[self.current_doc - 1]
+                if self.current_doc == self.count:  # 所有文件都输出完毕
+                    self.status = 4
+                    return remain_buffer, req_block_num, first_empty, ptr1_
+                else:
+                    self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
                 return remain_buffer, req_block_num, first_empty, ptr1_
 
             req_blocks[ptr1_].req_name = self.pcb_id
@@ -93,9 +108,8 @@ class PCB:
             else:
                 self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
 
-
     def dispatch_spooling_output_process(self, req_blocks: list, ptr0_: int, c1_: list, c2_: list, user_states: list,
-                                         c3_: int, spooling_buffer_: list):
+                                         c3_: int, spooling_buffer_: list, spare_req_blocks_: list, ptr1_: int):
         """
         输出井进程
         :param req_blocks:输出请求块req_blocks
@@ -104,8 +118,10 @@ class PCB:
         :param c2_:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
         :param user_states:[用户进程0状态, 用户进程1状态]
         :param c3_:输出请求块数
-        :param spooling_buffer_:输出井[spoolling_pool0, spoolling_pool1]
-        :return:ptr0_, c3_, output_info, user_states
+        :param spooling_buffer_:输出井[spooling_pool0, spooling_pool1]
+        :param spare_req_blocks_:备用输出请求块[spare_req_block0, spare_req_block1]
+        :param ptr1_:空闲请求输出块指针
+        :return:ptr0_, c3_, output_info, user_states, ptr1_
         """
         output_info = []
         while True:
@@ -135,6 +151,19 @@ class PCB:
             if user_states[user_process_id] == 1:
                 user_states[user_process_id] = 0
                 return ptr0_, c3_, output_info, user_states
-            if user_states[user_process_id] == 3:
-                user_states[user_process_id] = 0
-                return ptr0_, c3_, output_info, user_states
+            if user_states[0] == 3 or user_states[1] == 3:
+                if (user_states[0] == 3 and user_states[1] != 3) or (user_states[0] == 3 and user_states[1] == 3):
+                    user_states[0] = 0
+                    req_blocks[ptr1_].req_name = 0
+                    req_blocks[ptr1_].length = spare_req_blocks_[0].length
+                    req_blocks[ptr1_].address = spare_req_blocks_[0].address
+                    ptr1_ = (ptr1_ + 1) % 10
+                    c3_ -= 1
+                elif user_states[0] != 3 and user_states[1] == 3:
+                    user_states[1] = 0
+                    req_blocks[ptr1_].req_name = 1
+                    req_blocks[ptr1_].length = spare_req_blocks_[1].length
+                    req_blocks[ptr1_].address = spare_req_blocks_[1].address
+                    ptr1_ = (ptr1_ + 1) % 10
+                    c3_ -= 1
+                return ptr0_, c3_, output_info, user_states, ptr1_
