@@ -10,12 +10,14 @@ class SpoolingServer:
     :param user0:用户进程0
     :param user1:用户进程1
     :param spooling_pool:输出井
-    :param c1:输出井可用容量
+    :param c1c2:输出井可用容量
     :param c2:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
     :param c3:输出请求块数
     :param ptr0:要输出的第一个请求输出块指针
     :param ptr1:空闲请求输出块指针
     :param spooling_process:SPOOLing执行进程
+    :param dispatch_info:调度信息
+    :param output_info:输出信息
     """
 
     def __init__(self, file_num0: int, file_num1: int):
