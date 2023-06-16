@@ -7,7 +7,7 @@ def random_x():
     随机生成x，其中x的长度是随机生成的，且x中的字符也是1-9之间的随机数字，x以0结尾
     :return:
     """
-    length = random.randint(1, 50)
+    length = random.randint(1, 5)
     x = ""
     for i in range(length):
         x += str(random.randint(1, 9))
@@ -60,7 +60,7 @@ class PCB:
                               ptr1_: int, req_blocks: list):
         """
         调度用户进程
-        :param remain_buffer:输出井剩余容量 c1c2[i]
+        :param remain_buffer:输出井剩余容量 c1[i]
         :param req_block_num:空闲输出请求块数 c3
         :param spooling_buffer:输出井 spooling_pool[i]
         :param first_empty:第一个可用空缓冲指针 c2[i][0]
@@ -108,7 +108,7 @@ class PCB:
             else:
                 self.x = self.doc[self.current_doc]  # 更新x，读取下一个文件
 
-    def dispatch_spooling_output_process(self, req_blocks: list, ptr0_: int, c1_: list, c2_: list, user_states: list,
+    def dispatch_spooling_output_process(self, req_blocks: list, ptr0_: int, c1_: list, c2_: list, user_status: list,
                                          c3_: int, spooling_buffer_: list, spare_req_blocks_: list, ptr1_: int):
         """
         输出井进程
@@ -116,21 +116,21 @@ class PCB:
         :param ptr0_:要输出的第一个请求输出块指针
         :param c1_:输出井剩余容量 [c1c2[0], c1c2[1]]
         :param c2_:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
-        :param user_states:[用户进程0状态, 用户进程1状态]
+        :param user_status:[用户进程0状态, 用户进程1状态]
         :param c3_:输出请求块数
         :param spooling_buffer_:输出井[spooling_pool0, spooling_pool1]
         :param spare_req_blocks_:备用输出请求块[spare_req_block0, spare_req_block1]
         :param ptr1_:空闲请求输出块指针
-        :return:ptr0_, c3_, output_info, user_states, ptr1_
+        :return:ptr0_, c3_, output_info, user_status, ptr1_
         """
         output_info = []
         while True:
             if c3_ == 10:
-                if user_states[0] == 4 and user_states[1] == 4:
+                if user_status[0] == 4 and user_status[1] == 4:
                     self.status = 4
                 else:
                     self.status = 2
-                return ptr0_, c3_, output_info, user_states, ptr1_
+                return ptr0_, c3_, output_info, user_status, ptr1_
 
             user_process_id = req_blocks[ptr0_].req_name
             text_length = req_blocks[ptr0_].length
@@ -148,22 +148,22 @@ class PCB:
             c3_ += 1
             c1_[user_process_id] += text_length
             c2_[user_process_id][1] = (c2_[user_process_id][1] + text_length) % 100
-            if user_states[user_process_id] == 1:
-                user_states[user_process_id] = 0
-                return ptr0_, c3_, output_info, user_states, ptr1_
-            if user_states[0] == 3 or user_states[1] == 3:
-                if (user_states[0] == 3 and user_states[1] != 3) or (user_states[0] == 3 and user_states[1] == 3):
-                    user_states[0] = 0
+            if user_status[user_process_id] == 1:
+                user_status[user_process_id] = 0
+                return ptr0_, c3_, output_info, user_status, ptr1_
+            if user_status[0] == 3 or user_status[1] == 3:
+                if (user_status[0] == 3 and user_status[1] != 3) or (user_status[0] == 3 and user_status[1] == 3):
+                    user_status[0] = 0
                     req_blocks[ptr1_].req_name = 0
                     req_blocks[ptr1_].length = spare_req_blocks_[0].length
                     req_blocks[ptr1_].address = spare_req_blocks_[0].address
                     ptr1_ = (ptr1_ + 1) % 10
                     c3_ -= 1
-                elif user_states[0] != 3 and user_states[1] == 3:
-                    user_states[1] = 0
+                elif user_status[0] != 3 and user_status[1] == 3:
+                    user_status[1] = 0
                     req_blocks[ptr1_].req_name = 1
                     req_blocks[ptr1_].length = spare_req_blocks_[1].length
                     req_blocks[ptr1_].address = spare_req_blocks_[1].address
                     ptr1_ = (ptr1_ + 1) % 10
                     c3_ -= 1
-                return ptr0_, c3_, output_info, user_states, ptr1_
+                return ptr0_, c3_, output_info, user_status, ptr1_

@@ -10,7 +10,7 @@ class SpoolingServer:
     :param user0:用户进程0
     :param user1:用户进程1
     :param spooling_pool:输出井
-    :param c1c2:输出井可用容量
+    :param c1:输出井可用容量
     :param c2:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
     :param c3:输出请求块数
     :param ptr0:要输出的第一个请求输出块指针
@@ -65,6 +65,8 @@ class SpoolingServer:
             x = 46
         elif self.user0.status != 0 and self.user1.status != 0 and self.spooling_process.status == 0:
             x = 91
+        else:
+            x = random.randint(1, 100)
 
         if x <= 45:
             if self.user0.status == 0:  # 执行用户进程0
