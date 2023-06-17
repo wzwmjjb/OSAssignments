@@ -66,7 +66,7 @@ class PCB:
         :param first_empty:第一个可用空缓冲指针 c2[i][0]
         :param ptr1_:空闲请求输出块指针 ptr1
         :param req_blocks:输出请求块req_blocks
-        :return:c1c2[i], c3, c2[i][0], ptr1_
+        :return:c1[i], c3, c2[i][0], ptr1_
         """
         while True:
             while True:
@@ -114,7 +114,7 @@ class PCB:
         输出井进程
         :param req_blocks:输出请求块req_blocks
         :param ptr0_:要输出的第一个请求输出块指针
-        :param c1_:输出井剩余容量 [c1c2[0], c1c2[1]]
+        :param c1_:输出井剩余容量 [c1[0], c1[1]]
         :param c2_:输出井使用情况 [第一个可用空缓冲指针, 第一个满缓冲指针]
         :param user_status:[用户进程0状态, 用户进程1状态]
         :param c3_:输出请求块数
@@ -125,7 +125,7 @@ class PCB:
         """
         output_info = []
         while True:
-            if c3_ == 10:
+            if c3_ == 10:   # 输出请求块满
                 if user_status[0] == 4 and user_status[1] == 4:
                     self.status = 4
                 else:
