@@ -134,4 +134,3 @@ if __name__ == '__main__':
     first_time = [True, True]
     while spooling.spooling_process.status != 4:
         spooling.random_dispatch(first_time)
-    print("hh")
